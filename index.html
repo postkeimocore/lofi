@@ -1,0 +1,2291 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#F9F8FC">
+<title>lo-fi · v13</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Base colors (from spec) */
+  --milk-white: #F7F8FA;
+  --pearl-gray: #ECEEF2;
+  --foggy-silver: #D9DDE6;
+  --silver-blue: #DCE3EE;
+  --icy-lilac: #E9E6F7;
+  --charcoal: #2B2F36;
+
+  /* Semantic */
+  --bg: #F9F8FC;
+  --surface: #FFFFFF;
+  --surface-2: #F5F3F9;
+  --surface-hover: #FAF8FD;
+  --border: #E8E9F0;
+  --border-soft: #F0EEF4;
+
+  --accent: #A89BD4;
+  --accent-strong: #8E7FC3;
+  --accent-soft: #C7BEE5;
+  --accent-softer: #E9E6F7;
+
+  --text: var(--charcoal);
+  --text-muted: #5C6171;
+  --text-dim: #A5A9B4;
+
+  --radius-xl: 24px;
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+  --radius-pill: 999px;
+
+  --shadow-soft: 0 1px 2px rgba(43, 47, 54, 0.03), 0 2px 8px rgba(43, 47, 54, 0.04);
+  --shadow-card: 0 2px 12px rgba(43, 47, 54, 0.05);
+  --shadow-cta: 0 6px 20px rgba(168, 155, 212, 0.35);
+
+  --easing: cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  min-height: 100dvh;
+  font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+body {
+  background:
+    radial-gradient(ellipse 800px 500px at 100% 0%, rgba(233, 230, 247, 0.55), transparent 60%),
+    radial-gradient(ellipse 700px 600px at 0% 100%, rgba(220, 227, 238, 0.4), transparent 65%),
+    var(--bg);
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+button, input { font-family: inherit; }
+button { cursor: pointer; }
+
+/* ========== App shell ========== */
+.app-shell {
+  max-width: 520px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  padding: 24px 20px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* ========== Hero / Header ========== */
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 4px 2px 0;
+}
+.logo-wrap { display: flex; flex-direction: column; }
+.logo {
+  font-family: 'Playfair Display', 'Noto Serif JP', Georgia, serif;
+  font-weight: 400;
+  font-size: 38px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--charcoal);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo .sparkle {
+  color: var(--accent);
+  font-size: 16px;
+  font-family: inherit;
+}
+.logo-sub {
+  font-size: 12px;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+  margin-top: 6px;
+  font-weight: 400;
+}
+.hero-settings {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  color: var(--text-muted);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-soft);
+  transition: all 0.2s var(--easing);
+}
+.hero-settings:hover { color: var(--accent); }
+
+/* 再アップロードボタン（歯車の代わり） */
+.hero-reupload {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  color: var(--text-muted);
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  box-shadow: var(--shadow-soft);
+  transition: all 0.2s var(--easing);
+  white-space: nowrap;
+}
+.hero-reupload:hover { color: var(--accent); border-color: var(--accent-soft); }
+.hero-reupload svg { flex-shrink: 0; }
+
+/* ========== Upload zone ========== */
+.upload-zone {
+  border: 1.5px dashed var(--foggy-silver);
+  border-radius: var(--radius-xl);
+  padding: 40px 20px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.2s var(--easing);
+}
+.upload-zone:hover,
+.upload-zone.drag-active {
+  border-color: var(--accent-soft);
+  background: rgba(255, 255, 255, 0.75);
+}
+.upload-icon {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: var(--icy-lilac);
+  color: var(--accent);
+  margin: 0 auto 16px;
+  display: flex; align-items: center; justify-content: center;
+}
+.upload-icon svg { width: 26px; height: 26px; }
+.upload-main {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--charcoal);
+  margin-bottom: 6px;
+}
+.upload-main-sub {
+  font-size: 12px;
+  font-weight: 400;
+  color: #D9534F;
+  margin-left: 6px;
+}
+.upload-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+}
+.upload-ext {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 6px;
+  letter-spacing: 0.05em;
+}
+
+/* ========== Section common ========== */
+.section-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--charcoal);
+  margin-bottom: 12px;
+  letter-spacing: 0.02em;
+}
+
+/* ========== Preview ========== */
+.preview-section { display: flex; flex-direction: column; }
+
+/* BAとプレビューの距離を詰める（デフォルトのapp-shell gap=22pxを打ち消す） */
+.preview-section { margin-top: -12px; }
+.preview-wrap {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--pearl-gray);
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-card);
+}
+.preview-wrap canvas {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.preview-wrap.has-image { background: #1a1a1a; }
+
+/* 拡大ボタン（プレビュー右下） */
+.zoom-btn {
+  position: absolute;
+  bottom: 10px; right: 10px;
+  background: rgba(255, 255, 255, 0.85);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: none;
+  padding: 6px 10px;
+  border-radius: var(--radius-pill);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  z-index: 2;
+  transition: all 0.2s var(--easing);
+}
+.zoom-btn:hover { color: var(--accent); }
+
+/* Before/After 独立セクション（プレビュー外、グリッドとプリセットの間の中央） */
+.ba-section {
+  display: flex;
+  justify-content: center;
+  padding: 4px 0;
+}
+.ba-toggle {
+  background: var(--surface);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-radius: var(--radius-pill);
+  display: flex;
+  padding: 3px;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--border-soft);
+}
+.ba-btn {
+  background: transparent;
+  border: none;
+  padding: 7px 22px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  border-radius: var(--radius-pill);
+  color: var(--text-muted);
+  transition: all 0.2s var(--easing);
+}
+.ba-btn.active {
+  background: var(--accent);
+  color: white;
+}
+
+/* ========== Image grid ========== */
+.grid-section {
+  display: flex;
+  flex-direction: column;
+}
+.grid-list {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 4px 2px 8px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.grid-list::-webkit-scrollbar { display: none; }
+.grid-thumb {
+  flex: 0 0 auto;
+  width: 64px; height: 64px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: relative;
+  background: var(--pearl-gray);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s var(--easing);
+  padding: 0;
+  /* button要素のデフォルト装飾をリセット */
+  font-family: inherit;
+  /* タッチ機器の反応改善 */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.grid-thumb canvas {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+.grid-thumb.active {
+  border-color: var(--accent);
+}
+.grid-thumb.active::after {
+  content: '';
+  position: absolute; inset: 0;
+  border: 2px solid var(--accent);
+  border-radius: var(--radius-md);
+  pointer-events: none;
+}
+.grid-thumb-remove {
+  position: absolute;
+  top: 3px; right: 3px;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: rgba(43, 47, 54, 0.7);
+  color: white;
+  border: none;
+  font-size: 10px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s var(--easing);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+/* hoverは実デバイスのみ */
+@media (hover: hover) {
+  .grid-thumb:hover .grid-thumb-remove {
+    opacity: 1;
+  }
+}
+/* activeのときは常に表示（タッチ機器でもOK） */
+.grid-thumb.active .grid-thumb-remove {
+  opacity: 1;
+}
+
+.grid-divider {
+  flex: 0 0 auto;
+  width: 1px;
+  height: 36px;
+  background: var(--border);
+}
+.grid-add {
+  flex: 0 0 auto;
+  width: 64px; height: 64px;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  border: 1.5px dashed var(--foggy-silver);
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 10px;
+  letter-spacing: 0.03em;
+  transition: all 0.2s var(--easing);
+}
+.grid-add:hover:not(:disabled) {
+  border-color: var(--accent-soft);
+  color: var(--accent);
+  background: var(--surface-hover);
+}
+.grid-add.drag-active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--icy-lilac);
+  transform: scale(1.04);
+}
+.grid-add:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.grid-limit-hint {
+  font-size: 11px;
+  color: var(--text-dim);
+  text-align: center;
+  margin-top: 2px;
+  letter-spacing: 0.02em;
+  min-height: 14px;
+}
+
+/* ========== Zoom modal ========== */
+.zoom-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.zoom-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(20, 22, 30, 0.88);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.zoom-close {
+  position: absolute;
+  top: 20px; right: 20px;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 2;
+  transition: all 0.2s var(--easing);
+}
+.zoom-close:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+.zoom-content {
+  position: relative;
+  max-width: 92vw;
+  max-height: 85vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+.zoom-content canvas {
+  max-width: 100%;
+  max-height: 85vh;
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  display: block;
+}
+
+/* ========== Presets ========== */
+.presets-section { display: flex; flex-direction: column; }
+.presets-list {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 2px 0 8px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.presets-list::-webkit-scrollbar { display: none; }
+.preset {
+  flex: 0 0 auto;
+  background: transparent;
+  border: none;
+  padding: 0;
+  text-align: center;
+  transition: transform 0.2s var(--easing);
+}
+.preset:active { transform: scale(0.96); }
+
+.preset-thumb {
+  width: 50px; height: 50px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 6px;
+  border: 2px solid transparent;
+  transition: all 0.2s var(--easing);
+}
+.preset-thumb::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--c1, #4A4D5A), var(--c2, #151720));
+}
+.preset[data-preset="midnight"] .preset-thumb { --c1: #3D4054; --c2: #14161F; }
+.preset[data-preset="night"] .preset-thumb { --c1: #5A5E72; --c2: #2A2D3E; }
+.preset[data-preset="neutral"] .preset-thumb { --c1: #9499A3; --c2: #5A5D6A; }
+.preset[data-preset="warm"] .preset-thumb { --c1: #9C7A55; --c2: #3D2E1F; }
+.preset[data-preset="forest"] .preset-thumb { --c1: #6B8060; --c2: #2B3624; }
+.preset[data-preset="pink"] .preset-thumb { --c1: #D8B4C4; --c2: #7A5068; }
+
+.preset.active .preset-thumb {
+  border-color: var(--accent);
+  transform: scale(1.03);
+}
+.preset.active .preset-thumb::after {
+  content: '';
+  position: absolute;
+  top: 3px; right: 3px;
+  width: 16px; height: 16px;
+  background: var(--accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E") center no-repeat;
+  border-radius: 50%;
+}
+.preset-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+.preset.active .preset-label {
+  color: var(--accent-strong);
+  font-weight: 500;
+}
+
+/* ========== Sliders card ========== */
+.sliders-section {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 22px 20px 18px;
+  box-shadow: var(--shadow-card);
+}
+.sliders-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.sliders-header .section-title { margin-bottom: 0; }
+.reset-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s var(--easing);
+}
+.reset-btn:hover { color: var(--accent); }
+.reset-btn svg { width: 12px; height: 12px; }
+
+.slider-row {
+  display: grid;
+  grid-template-columns: 20px 1fr 80px 52px;
+  gap: 10px;
+  align-items: center;
+  padding: 9px 0;
+}
+.slider-icon {
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.slider-icon svg { width: 16px; height: 16px; }
+.slider-label {
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 400;
+}
+.slider-value {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 3px;
+  background: var(--pearl-gray);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 16px; height: 16px;
+  background: #fff;
+  border: 1.5px solid var(--accent);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(168, 155, 212, 0.35);
+  transition: transform 0.15s var(--easing);
+}
+input[type="range"]::-webkit-slider-thumb:active {
+  transform: scale(1.15);
+  background: var(--accent-softer);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 16px; height: 16px;
+  background: #fff;
+  border: 1.5px solid var(--accent);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(168, 155, 212, 0.35);
+}
+
+/* Option buttons (motion direction) */
+.option-group {
+  display: flex;
+  gap: 6px;
+  margin: 6px 0 6px 30px;
+  grid-column: 1 / -1;
+}
+.option-btn {
+  flex: 1;
+  background: var(--surface-2);
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  font-size: 11px;
+  padding: 7px 4px;
+  border-radius: var(--radius-sm);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  transition: all 0.2s var(--easing);
+}
+.option-btn.active {
+  background: var(--icy-lilac);
+  color: var(--accent-strong);
+  border-color: var(--accent-soft);
+}
+
+/* Details toggle */
+.details-toggle {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--accent);
+  font-size: 13px;
+  padding: 12px;
+  margin-top: 8px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: color 0.2s var(--easing);
+}
+.details-toggle svg {
+  width: 14px; height: 14px;
+  transition: transform 0.25s var(--easing);
+}
+.details-toggle.open svg { transform: rotate(180deg); }
+
+.hidden { display: none !important; }
+
+/* ========== Save button ========== */
+.save-section { display: flex; flex-direction: column; gap: 8px; }
+.save-btn {
+  width: 100%;
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 18px;
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s var(--easing);
+  box-shadow: 0 8px 24px rgba(142, 127, 195, 0.45);
+}
+.save-btn:hover:not(:disabled) {
+  background: var(--accent-strong);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 28px rgba(142, 127, 195, 0.55);
+}
+.save-btn:active:not(:disabled) { transform: translateY(0); }
+.save-btn:disabled {
+  background: var(--foggy-silver);
+  color: var(--text-dim);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.save-btn svg { width: 18px; height: 18px; }
+.save-hint {
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.03em;
+}
+
+.status-msg {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 4px 8px;
+  min-height: 18px;
+  line-height: 1.5;
+  transition: color 0.2s var(--easing);
+}
+.status-msg.err {
+  color: #D9534F;
+  font-weight: 500;
+}
+.status-msg.ok {
+  color: var(--text-muted);
+}
+.status-msg.info {
+  color: var(--accent-strong);
+}
+
+/* ========== Mobile: sticky preview + BA toggle ========== */
+@media (max-width: 640px) {
+  .app-shell {
+    padding: 20px 16px 28px;
+    gap: 18px;
+  }
+
+  /* 画像ロード後、BA と Preview を連続で sticky 固定 */
+  body.image-loaded .ba-section {
+    position: sticky;
+    top: 0;
+    z-index: 31;
+    margin: 0 -16px;
+    padding: 8px 16px 4px;
+    background: linear-gradient(
+      to bottom,
+      var(--bg) 0%,
+      var(--bg) 92%,
+      rgba(249, 248, 252, 0.8) 100%
+    );
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+  body.image-loaded .preview-section {
+    position: sticky;
+    top: 48px; /* ba-sectionの高さぶん下げる */
+    z-index: 30;
+    margin: 0 -16px;
+    padding: 4px 16px 12px;
+    background: linear-gradient(
+      to bottom,
+      var(--bg) 0%,
+      var(--bg) 85%,
+      rgba(249, 248, 252, 0.85) 100%
+    );
+    -webkit-backdrop-filter: blur(8px);
+  }
+  body.image-loaded .preview-section .section-title {
+    display: none;
+  }
+  body.image-loaded .preview-wrap {
+    aspect-ratio: unset;
+    height: 38vh;
+    max-height: 42vh;
+  }
+  body.image-loaded .preview-wrap canvas {
+    object-fit: contain;
+  }
+  /* Hide hero when image is loaded to give more space */
+  body.image-loaded .hero {
+    padding: 0;
+  }
+  body.image-loaded .logo { font-size: 22px; }
+  body.image-loaded .logo-sub { font-size: 10px; margin-top: 2px; }
+}
+
+/* ========== Editor columns wrapper ========== */
+/* モバイル（デフォルト）はラッパーを透過させて元の縦並びを維持 */
+.editor-columns,
+.editor-left,
+.editor-right {
+  display: contents;
+}
+
+/* Global status (どの画面でも表示可能) */
+.global-status {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 4px 8px;
+  min-height: 0;
+  line-height: 1.5;
+  transition: color 0.2s var(--easing);
+}
+.global-status:empty { display: none; }
+.global-status.err {
+  color: #D9534F;
+  font-weight: 500;
+}
+.global-status.ok { color: var(--text-muted); }
+.global-status.info { color: var(--accent-strong); }
+
+/* ========== Desktop: side-by-side layout ========== */
+@media (min-width: 900px) {
+  .app-shell {
+    max-width: 980px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  /* 上段要素はそのまま縦に並ぶ: hero / global-status / upload-zone */
+
+  /* Editorエリアを2カラム (ba は上段全幅、left/right は下段) */
+  .editor-columns {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 16px 32px;
+    align-items: flex-start;
+  }
+  .ba-section {
+    grid-column: 1 / -1;
+    justify-self: center;
+    /* PCではsticky解除してスクロールで流す（プレビューとの距離を保つ） */
+    position: static;
+    top: auto;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .editor-left {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: sticky;
+    top: 24px;
+    min-width: 0;
+  }
+  .editor-right {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .preview-wrap {
+    aspect-ratio: auto;
+    height: 60vh;
+    max-height: 640px;
+    width: 100%;
+  }
+  .preview-wrap canvas {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /* PCでは preview-section の margin-top: -12px を打ち消す */
+  .preview-section { margin-top: 0; }
+}
+
+/* Loading spinner */
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-spinner {
+  display: inline-block;
+  width: 16px; height: 16px;
+  border: 2px solid var(--accent-softer);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+.preview-loading {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 10px;
+  background: var(--pearl-gray);
+  color: var(--text-muted);
+  font-size: 12px;
+  z-index: 1;
+}
+</style>
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="logo-wrap">
+      <h1 class="logo">lo-fi <span class="sparkle">✦</span></h1>
+      <p class="logo-sub">soft haze processor</p>
+    </div>
+    <button class="hero-reupload hidden" id="reuploadBtn" aria-label="アップロードし直す" type="button">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <span>アップロードし直す</span>
+    </button>
+  </header>
+
+  <!-- Global status (エラー・成功メッセージをどの画面でも表示可能に) -->
+  <div class="global-status" id="globalStatus"></div>
+
+  <!-- Upload (shown before image) -->
+  <section class="upload-zone" id="uploadZone">
+    <input type="file" id="fileInput" accept="image/*" multiple hidden>
+    <div class="upload-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    </div>
+    <p class="upload-main" id="uploadPrompt">写真をアップロード<span class="upload-main-sub">（6枚まで選択可能）</span></p>
+    <p class="upload-hint" id="uploadHint">タップまたはドラッグ&amp;ドロップ</p>
+    <p class="upload-ext">JPG / PNG 対応</p>
+  </section>
+
+  <!-- Editor columns (wraps editor sections for 2-column PC layout) -->
+  <div class="editor-columns">
+
+  <!-- Before/After (プレビュー上部・sticky) -->
+  <section class="ba-section hidden" id="baSection">
+    <div class="ba-toggle">
+      <button class="ba-btn" id="btnBefore" type="button">Before</button>
+      <button class="ba-btn active" id="btnAfter" type="button">After</button>
+    </div>
+  </section>
+
+  <div class="editor-left">
+
+  <!-- Preview -->
+  <section class="preview-section hidden" id="previewSection">
+    <div class="preview-wrap" id="previewWrap">
+      <canvas id="previewCanvas"></canvas>
+      <button class="zoom-btn" id="zoomBtn" type="button" aria-label="拡大表示">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+        <span>拡大</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Image grid (thumbnails of all loaded images + add) -->
+  <section class="grid-section hidden" id="gridSection">
+    <div class="grid-list" id="gridList">
+      <!-- サムネは動的生成 -->
+      <div class="grid-divider" aria-hidden="true"></div>
+      <button class="grid-add" id="gridAddBtn" type="button" aria-label="追加">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span>追加</span>
+      </button>
+    </div>
+    <p class="grid-limit-hint" id="gridLimitHint"></p>
+  </section>
+
+  </div><!-- /editor-left -->
+
+  <div class="editor-right">
+
+  <!-- Presets -->
+  <section class="presets-section hidden" id="presetsSection">
+    <h2 class="section-title">プリセット</h2>
+    <div class="presets-list">
+      <button class="preset" data-preset="midnight" type="button">
+        <div class="preset-thumb"></div>
+        <div class="preset-label">深夜</div>
+      </button>
+      <button class="preset" data-preset="night" type="button">
+        <div class="preset-thumb"></div>
+        <div class="preset-label">夜</div>
+      </button>
+      <button class="preset" data-preset="neutral" type="button">
+        <div class="preset-thumb"></div>
+        <div class="preset-label">ニュートラル</div>
+      </button>
+      <button class="preset" data-preset="warm" type="button">
+        <div class="preset-thumb"></div>
+        <div class="preset-label">暖色夜</div>
+      </button>
+      <button class="preset" data-preset="forest" type="button">
+        <div class="preset-thumb"></div>
+        <div class="preset-label">フォレスト</div>
+      </button>
+      <button class="preset" data-preset="pink" type="button">
+        <div class="preset-thumb"></div>
+        <div class="preset-label">ピンク</div>
+      </button>
+    </div>
+  </section>
+
+  <!-- Sliders -->
+  <section class="sliders-section hidden" id="slidersSection">
+    <div class="sliders-header">
+      <h2 class="section-title">ファインチューニング</h2>
+      <button class="reset-btn" id="resetBtn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        リセット
+      </button>
+    </div>
+
+    <!-- Basic sliders: 露出・グロー・肌・彩度 -->
+    <div class="sliders-basic">
+      <div class="slider-row">
+        <span class="slider-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></span>
+        <span class="slider-label">露出</span>
+        <input type="range" id="s_exposure" min="-50" max="15" value="0">
+        <span class="slider-value" id="v_exposure">0</span>
+      </div>
+      <div class="slider-row">
+        <span class="slider-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6z"/></svg></span>
+        <span class="slider-label">グロー</span>
+        <input type="range" id="s_glow" min="0" max="300" value="0">
+        <span class="slider-value" id="v_glow">0</span>
+      </div>
+      <div class="slider-row">
+        <span class="slider-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg></span>
+        <span class="slider-label">肌</span>
+        <input type="range" id="s_skin" min="0" max="100" value="0">
+        <span class="slider-value" id="v_skin">0</span>
+      </div>
+      <div class="slider-row">
+        <span class="slider-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 5 5 0 0 1 0-10 5 5 0 0 1 0-10z" fill="currentColor" fill-opacity="0.2"/><circle cx="12" cy="12" r="10"/></svg></span>
+        <span class="slider-label">彩度</span>
+        <input type="range" id="s_saturation" min="-100" max="100" value="0">
+        <span class="slider-value" id="v_saturation">0</span>
+      </div>
+    </div>
+
+    <!-- Detail sliders: collapsed by default -->
+    <div class="sliders-details hidden" id="slidersDetails">
+      <div class="slider-row">
+        <span class="slider-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg></span>
+        <span class="slider-label">解像度</span>
+        <input type="range" id="s_softness" min="0" max="100" value="0">
+        <span class="slider-value" id="v_softness">0</span>
+      </div>
+      <div class="slider-row">
+        <span class="slider-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" stroke-dasharray="2 3"/></svg></span>
+        <span class="slider-label">ぼかし</span>
+        <input type="range" id="s_blur" min="0" max="100" value="0">
+        <span class="slider-value" id="v_blur">0</span>
+      </div>
+      <div class="slider-row">
+        <span class="slider-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        <span class="slider-label">モーション</span>
+        <input type="range" id="s_motion" min="0" max="100" value="0">
+        <span class="slider-value" id="v_motion">0</span>
+        <div class="option-group" data-group="motionDir">
+          <button type="button" class="option-btn active" data-value="horizontal">水平</button>
+          <button type="button" class="option-btn" data-value="vertical">垂直</button>
+          <button type="button" class="option-btn" data-value="diag-down">斜↘</button>
+          <button type="button" class="option-btn" data-value="diag-up">斜↗</button>
+        </div>
+      </div>
+      <div class="slider-row">
+        <span class="slider-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/><circle cx="8" cy="6" r="1"/><circle cx="16" cy="18" r="1"/></svg></span>
+        <span class="slider-label">ノイズ</span>
+        <input type="range" id="s_noise" min="0" max="100" value="0">
+        <span class="slider-value" id="v_noise">0</span>
+      </div>
+      <div class="slider-row">
+        <span class="slider-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5" stroke-opacity="0.4"/></svg></span>
+        <span class="slider-label">ビネット</span>
+        <input type="range" id="s_vignette" min="0" max="100" value="0">
+        <span class="slider-value" id="v_vignette">0</span>
+      </div>
+      <div class="slider-row">
+        <span class="slider-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg></span>
+        <span class="slider-label">色味強度</span>
+        <input type="range" id="s_colorAmount" min="0" max="100" value="0">
+        <span class="slider-value" id="v_colorAmount">0</span>
+      </div>
+    </div>
+
+    <button class="details-toggle" id="detailsToggle" type="button">
+      <span class="details-label">詳細を開く</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+  </section>
+
+  <!-- Save -->
+  <section class="save-section hidden" id="saveSection">
+    <button class="save-btn" id="downloadBtn" type="button" disabled>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <span id="downloadLabel">保存</span>
+    </button>
+    <div class="status-msg" id="status"></div>
+  </section>
+
+  </div><!-- /editor-right -->
+  </div><!-- /editor-columns -->
+
+</div>
+
+<!-- Zoom modal -->
+<div class="zoom-modal hidden" id="zoomModal" role="dialog" aria-modal="true">
+  <div class="zoom-backdrop" id="zoomBackdrop"></div>
+  <button class="zoom-close" id="zoomClose" aria-label="閉じる" type="button">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <div class="zoom-content">
+    <canvas id="zoomCanvas"></canvas>
+  </div>
+</div>
+
+<!-- 再アップロード用の別input（既存のfileInputと混ざらないように） -->
+<input type="file" id="reuploadInput" accept="image/*" multiple hidden>
+
+<canvas id="fullCanvas" style="display:none;"></canvas>
+
+<!-- JSZip for batch export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<script>
+(() => {
+'use strict';
+
+const MAX_PREVIEW_SIZE = 880;
+const MAX_FILE_SIZE = 20 * 1024 * 1024;
+const MAX_EXPORT_PIXELS = 12_000_000;
+const MAX_IMAGES = 6;
+const THUMB_SIZE = 128;  // グリッドサムネ（2xで128、表示64px）
+
+const PRESETS = {
+  midnight: {
+    softness: 65, blur: 0, motion: 0, motionDir: 'horizontal',
+    dr: 55, exposure: -12, colorAmount: 60, saturation: 0,
+    shadowShift: { r: -10, g: -2, b: 20 },
+    highlightShift: { r: -2, g: -4, b: 6 },
+    noise: 0, skin: 0, vignette: 30,
+    glow: 60, glowThreshold: 95,
+    quality: 78, doubleCompress: false
+  },
+  night: {
+    softness: 65, blur: 0, motion: 0, motionDir: 'horizontal',
+    dr: 50, exposure: -8, colorAmount: 45, saturation: 0,
+    shadowShift: { r: -6, g: 0, b: 15 },
+    highlightShift: { r: 0, g: -2, b: 3 },
+    noise: 0, skin: 0, vignette: 25,
+    glow: 50, glowThreshold: 100,
+    quality: 78, doubleCompress: false
+  },
+  neutral: {
+    softness: 60, blur: 0, motion: 0, motionDir: 'horizontal',
+    dr: 45, exposure: -6, colorAmount: 25, saturation: 0,
+    shadowShift: { r: -3, g: 0, b: 5 },
+    highlightShift: { r: 3, g: 0, b: -2 },
+    noise: 0, skin: 0, vignette: 18,
+    glow: 45, glowThreshold: 105,
+    quality: 80, doubleCompress: false
+  },
+  warm: {
+    softness: 65, blur: 0, motion: 0, motionDir: 'horizontal',
+    dr: 50, exposure: -6, colorAmount: 40, saturation: 0,
+    shadowShift: { r: 5, g: -1, b: -3 },
+    highlightShift: { r: 15, g: 2, b: -6 },
+    noise: 0, skin: 0, vignette: 18,
+    glow: 55, glowThreshold: 95,
+    quality: 80, doubleCompress: false
+  },
+  // 緑系: 森〜苔のような低彩度グリーン
+  forest: {
+    softness: 65, blur: 0, motion: 0, motionDir: 'horizontal',
+    dr: 52, exposure: -10, colorAmount: 55, saturation: -15,
+    shadowShift: { r: -5, g: 3, b: -2 },
+    highlightShift: { r: -6, g: 8, b: -2 },
+    noise: 0, skin: 0, vignette: 22,
+    glow: 55, glowThreshold: 95,
+    quality: 80, doubleCompress: false
+  },
+  pink: {
+    softness: 65, blur: 0, motion: 0, motionDir: 'horizontal',
+    dr: 55, exposure: -12, colorAmount: 70, saturation: 0,
+    shadowShift: { r: 8, g: -8, b: 5 },
+    highlightShift: { r: 20, g: -12, b: 0 },
+    noise: 0, skin: 0, vignette: 20,
+    glow: 140, glowThreshold: 90,
+    quality: 78, doubleCompress: false
+  }
+};
+
+// 画像エントリのデフォルトパラメータを作る
+function makeDefaultParams() {
+  return {
+    exposure: 0, softness: 0, blur: 0, motion: 0, motionDir: 'horizontal',
+    glow: 0, noise: 0, skin: 0, saturation: 0, vignette: 0, colorAmount: 0
+  };
+}
+
+const state = {
+  images: [],       // { id, image, fileName, params, activePreset }
+  activeIndex: -1,  // 現在編集中の画像 index
+  showBefore: false,
+  processing: false
+};
+
+// 現在アクティブな画像エントリを取得
+function activeEntry() {
+  if (state.activeIndex < 0 || state.activeIndex >= state.images.length) return null;
+  return state.images[state.activeIndex];
+}
+
+const $ = (id) => document.getElementById(id);
+const fileInput = $('fileInput');
+const uploadZone = $('uploadZone');
+const uploadPrompt = $('uploadPrompt');
+const uploadHint = $('uploadHint');
+const previewCanvas = $('previewCanvas');
+const previewWrap = $('previewWrap');
+const fullCanvas = $('fullCanvas');
+const btnAfter = $('btnAfter');
+const btnBefore = $('btnBefore');
+const downloadBtn = $('downloadBtn');
+const statusEl = $('status');
+
+const sliderKeys = ['exposure', 'softness', 'blur', 'motion', 'glow', 'noise', 'skin', 'saturation', 'vignette', 'colorAmount'];
+const sliders = {};
+sliderKeys.forEach(k => {
+  const input = $('s_' + k);
+  const value = $('v_' + k);
+  const format = (v => String(v));
+  sliders[k] = { input, value, format };
+  input.addEventListener('input', () => {
+    const v = parseInt(input.value, 10);
+    const entry = activeEntry();
+    if (entry) entry.params[k] = v;
+    value.textContent = format(v);
+    scheduleRender();
+  });
+});
+
+// オプションボタン（モーション方向・グロー合成モード）
+document.querySelectorAll('.option-group').forEach(group => {
+  const stateKey = group.dataset.group;
+  group.querySelectorAll('.option-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const entry = activeEntry();
+      if (entry) entry.params[stateKey] = btn.dataset.value;
+      group.querySelectorAll('.option-btn').forEach(b => {
+        b.classList.toggle('active', b === btn);
+      });
+      scheduleRender();
+    });
+  });
+});
+
+function setOptionButton(stateKey, value) {
+  const group = document.querySelector(`.option-group[data-group="${stateKey}"]`);
+  if (!group) return;
+  group.querySelectorAll('.option-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.value === value);
+  });
+}
+
+// File handling
+uploadZone.addEventListener('click', () => fileInput.click());
+
+['dragenter', 'dragover'].forEach(ev => {
+  uploadZone.addEventListener(ev, (e) => {
+    e.preventDefault();
+    uploadZone.classList.add('drag');
+  });
+});
+['dragleave', 'drop'].forEach(ev => {
+  uploadZone.addEventListener(ev, (e) => {
+    e.preventDefault();
+    uploadZone.classList.remove('drag');
+  });
+});
+uploadZone.addEventListener('drop', (e) => {
+  const files = e.dataTransfer && e.dataTransfer.files;
+  if (files && files.length) handleFiles(files);
+});
+fileInput.addEventListener('change', (e) => {
+  if (e.target.files && e.target.files.length) handleFiles(e.target.files);
+  e.target.value = ''; // 同じファイルを再選択可能に
+});
+
+// 複数ファイルを受け付ける（エラー理由も集計）
+function handleFiles(files) {
+  if (!files || files.length === 0) return;
+  const fileList = Array.from(files);
+  const remaining = MAX_IMAGES - state.images.length;
+  if (remaining <= 0) {
+    setStatus(`上限 ${MAX_IMAGES}枚に達しています`, 'err');
+    return;
+  }
+  const toProcess = fileList.slice(0, remaining);
+  const overLimit = fileList.length - toProcess.length;
+
+  let added = 0;
+  const errorCounts = { format: 0, size: 0, read: 0 };
+  let pending = toProcess.length;
+
+  const recordError = (kind) => {
+    errorCounts[kind] = (errorCounts[kind] || 0) + 1;
+  };
+
+  toProcess.forEach(file => {
+    if (!/^image\/(jpeg|png)$/.test(file.type)) {
+      recordError('format');
+      pending--;
+      if (pending === 0) finishAdd();
+      return;
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      recordError('size');
+      pending--;
+      if (pending === 0) finishAdd();
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        addImageEntry(img, file.name.replace(/\.[^.]+$/, ''));
+        added++;
+        pending--;
+        if (pending === 0) finishAdd();
+      };
+      img.onerror = () => {
+        recordError('read');
+        pending--;
+        if (pending === 0) finishAdd();
+      };
+      img.src = e.target.result;
+    };
+    reader.onerror = () => {
+      recordError('read');
+      pending--;
+      if (pending === 0) finishAdd();
+    };
+    reader.readAsDataURL(file);
+  });
+
+  function finishAdd() {
+    if (added > 0) {
+      showEditorUI();
+      const firstAdded = state.images.length - added;
+      setActiveImage(firstAdded);
+      if (!state.images[firstAdded].activePreset) {
+        applyPreset('midnight');
+      }
+    }
+    renderGrid();
+
+    // ステータスメッセージを組み立て
+    const totalTried = fileList.length;
+    const totalErrors = errorCounts.format + errorCounts.size + errorCounts.read;
+    const anyProblem = totalErrors > 0 || overLimit > 0;
+
+    if (!anyProblem) {
+      // 全部成功
+      if (added > 1) setStatus(`${added}枚を追加しました`, 'ok');
+      else setStatus('', 'ok');
+      return;
+    }
+
+    // 部分成功 or 全滅のどちらか
+    const parts = [];
+    if (added > 0) {
+      parts.push(`${totalTried}枚中 ${added}枚を追加`);
+    } else {
+      parts.push('追加できませんでした');
+    }
+    const errDetails = [];
+    if (errorCounts.format > 0) {
+      errDetails.push(`${errorCounts.format}枚はエラー (JPG/PNG以外)`);
+    }
+    if (errorCounts.size > 0) {
+      const mb = Math.round(MAX_FILE_SIZE / 1024 / 1024);
+      errDetails.push(`${errorCounts.size}枚はエラー (${mb}MB超)`);
+    }
+    if (errorCounts.read > 0) {
+      errDetails.push(`${errorCounts.read}枚はエラー (読み込み失敗)`);
+    }
+    if (overLimit > 0) {
+      errDetails.push(`${overLimit}枚は上限超過`);
+    }
+    if (errDetails.length) {
+      parts.push(`（${errDetails.join('、')}）`);
+    }
+    setStatus(parts.join(' '), 'err');
+  }
+}
+
+// 単一ファイルを画像エントリとして追加（処理ロジック共通化用）
+function addImageEntry(img, fileName) {
+  if (state.images.length >= MAX_IMAGES) return false;
+  const entry = {
+    id: `img-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    image: img,
+    fileName: fileName || 'image',
+    params: makeDefaultParams(),
+    activePreset: null,
+  };
+  state.images.push(entry);
+  return true;
+}
+
+// アクティブ画像を切替
+function setActiveImage(index) {
+  if (index < 0 || index >= state.images.length) return;
+  state.activeIndex = index;
+  syncUIFromActiveImage();
+  render();
+  updateGridActive();
+}
+
+// 画像を削除
+function removeImageEntry(index) {
+  if (index < 0 || index >= state.images.length) return;
+  state.images.splice(index, 1);
+  if (state.images.length === 0) {
+    state.activeIndex = -1;
+    document.body.classList.remove('image-loaded');
+    uploadZone.classList.remove('hidden');
+    ['previewSection', 'gridSection', 'baSection', 'presetsSection', 'slidersSection', 'saveSection'].forEach(id => {
+      document.getElementById(id).classList.add('hidden');
+    });
+    document.getElementById('reuploadBtn').classList.add('hidden');
+  } else {
+    // activeIndexを調整
+    if (state.activeIndex >= state.images.length) state.activeIndex = state.images.length - 1;
+    else if (index < state.activeIndex) state.activeIndex--;
+    setActiveImage(state.activeIndex);
+  }
+  renderGrid();
+  updateLimitHint();
+}
+
+function updateLimitHint() {
+  const hint = document.getElementById('gridLimitHint');
+  if (!hint) return;
+  hint.textContent = `${state.images.length} / ${MAX_IMAGES}枚`;
+}
+
+// 画像がロードされたら編集UIを表示
+function showEditorUI() {
+  uploadZone.classList.add('hidden');
+  ['previewSection', 'gridSection', 'baSection', 'presetsSection', 'slidersSection', 'saveSection'].forEach(id => {
+    document.getElementById(id).classList.remove('hidden');
+  });
+  document.getElementById('reuploadBtn').classList.remove('hidden');
+  previewWrap.classList.add('has-image');
+  document.body.classList.add('image-loaded');
+  downloadBtn.disabled = false;
+}
+
+// Presets
+document.querySelectorAll('.preset').forEach(btn => {
+  btn.addEventListener('click', () => applyPreset(btn.dataset.preset));
+});
+
+function applyPreset(key) {
+  const p = PRESETS[key];
+  if (!p) return;
+  const entry = activeEntry();
+  if (!entry) return;  // 画像がないと何もしない
+  // スライダー対象の全値を entry.params と UI に反映
+  const sliderParams = ['exposure', 'softness', 'blur', 'motion', 'glow', 'noise', 'skin', 'saturation', 'vignette', 'colorAmount'];
+  sliderParams.forEach(param => {
+    entry.params[param] = p[param];
+    const s = sliders[param];
+    s.input.value = p[param];
+    s.value.textContent = s.format(p[param]);
+  });
+  // 方向選択もリセット
+  entry.params.motionDir = p.motionDir || 'horizontal';
+  setOptionButton('motionDir', entry.params.motionDir);
+
+  entry.activePreset = key;
+  document.querySelectorAll('.preset').forEach(b => {
+    b.classList.toggle('active', b.dataset.preset === key);
+  });
+  render();
+}
+
+// 画像切替時、その画像のparams/presetをUIに反映
+function syncUIFromActiveImage() {
+  const entry = activeEntry();
+  if (!entry) return;
+  const sliderParams = ['exposure', 'softness', 'blur', 'motion', 'glow', 'noise', 'skin', 'saturation', 'vignette', 'colorAmount'];
+  sliderParams.forEach(param => {
+    const s = sliders[param];
+    const v = entry.params[param] ?? 0;
+    s.input.value = v;
+    s.value.textContent = s.format(v);
+  });
+  setOptionButton('motionDir', entry.params.motionDir || 'horizontal');
+  document.querySelectorAll('.preset').forEach(b => {
+    b.classList.toggle('active', b.dataset.preset === entry.activePreset);
+  });
+}
+
+// Before/After toggle
+btnAfter.addEventListener('click', () => {
+  state.showBefore = false;
+  btnAfter.classList.add('active');
+  btnBefore.classList.remove('active');
+  render();
+});
+btnBefore.addEventListener('click', () => {
+  state.showBefore = true;
+  btnBefore.classList.add('active');
+  btnAfter.classList.remove('active');
+  render();
+});
+
+// Render pipeline
+let renderRaf = null;
+function scheduleRender() {
+  if (renderRaf) cancelAnimationFrame(renderRaf);
+  renderRaf = requestAnimationFrame(() => {
+    renderRaf = null;
+    render();
+  });
+}
+
+function render() {
+  const entry = activeEntry();
+  if (!entry) return;
+  const src = entry.image;
+  const scale = Math.min(1, MAX_PREVIEW_SIZE / Math.max(src.width, src.height));
+  const pw = Math.round(src.width * scale);
+  const ph = Math.round(src.height * scale);
+
+  previewCanvas.width = pw;
+  previewCanvas.height = ph;
+  const ctx = previewCanvas.getContext('2d');
+
+  if (state.showBefore) {
+    ctx.clearRect(0, 0, pw, ph);
+    ctx.drawImage(src, 0, 0, pw, ph);
+  } else {
+    processCanvas(previewCanvas, src, entry.params, entry.activePreset);
+  }
+  // グリッドサムネも更新
+  updateGridThumb(state.activeIndex);
+}
+
+// Split-tone pipeline + モーション/ぼかし/グロー
+const MOTION_ANGLES = {
+  horizontal: 5,
+  vertical: 85,
+  'diag-down': 45,
+  'diag-up': -45
+};
+
+function processCanvas(targetCanvas, sourceImg, params, presetKey) {
+  const w = targetCanvas.width;
+  const h = targetCanvas.height;
+  const ctx = targetCanvas.getContext('2d');
+  const preset = PRESETS[presetKey] || PRESETS.midnight;
+
+  // 1. 解像度（ダウンサンプル→アップサンプル = ガビガビ化）
+  applySoftness(ctx, sourceImg, w, h, params.softness || 0);
+
+  // 2. ぼかし（全体ガウス相当のbox blur）
+  if (params.blur > 0) {
+    const imageData = ctx.getImageData(0, 0, w, h);
+    applyBoxBlur(imageData.data, w, h, params.blur / 12.5);  // 0-100 → 0-8px
+    ctx.putImageData(imageData, 0, 0);
+  }
+
+  // 3. モーションブラー（角度は選択に従う）
+  if (params.motion > 0) {
+    const angleDeg = MOTION_ANGLES[params.motionDir] ?? 5;
+    applyMotionBlur(ctx, w, h, params.motion, angleDeg);
+  }
+
+  // 4. 色処理
+  const imageData = ctx.getImageData(0, 0, w, h);
+  applyColorPipeline(imageData.data, preset, params);
+  // 4-2. 肌の明度持ち上げ（暗い肌だけを選択的に明るく）
+  if (params.skin > 0) {
+    applySkinBrighten(imageData.data, params.skin);
+  }
+  ctx.putImageData(imageData, 0, 0);
+
+  // 5. グロー（glow強度に応じて自動でなめらかさ＆発光感アップ）
+  if (params.glow > 0) {
+    applyGlow(ctx, w, h, params.glow, preset.glowThreshold || 95);
+  }
+
+  // 6. ビネット
+  if (params.vignette > 0) {
+    applyVignette(ctx, w, h, params.vignette);
+  }
+}
+
+// ① ソフトネス: drawImageで小さく描いて元サイズに戻す
+const softCanvas = document.createElement('canvas');
+function applySoftness(destCtx, sourceImg, w, h, amount) {
+  if (amount <= 0) {
+    // 解像度スライダーが 0 のときは元画像をそのまま高品質で描画（ガビガビ処理なし）
+    destCtx.clearRect(0, 0, w, h);
+    destCtx.imageSmoothingEnabled = true;
+    destCtx.imageSmoothingQuality = 'high';
+    destCtx.drawImage(sourceImg, 0, 0, w, h);
+    return;
+  }
+  const scale = 1 - (0.6 * amount / 100);
+  const sW = Math.max(48, Math.round(w * scale));
+  const sH = Math.max(48, Math.round(h * scale));
+  softCanvas.width = sW;
+  softCanvas.height = sH;
+  const sctx = softCanvas.getContext('2d');
+  sctx.imageSmoothingEnabled = true;
+  sctx.imageSmoothingQuality = 'high';
+  sctx.clearRect(0, 0, sW, sH);
+  sctx.drawImage(sourceImg, 0, 0, sW, sH);
+  destCtx.imageSmoothingEnabled = true;
+  destCtx.imageSmoothingQuality = 'high';
+  destCtx.clearRect(0, 0, w, h);
+  destCtx.drawImage(softCanvas, 0, 0, w, h);
+}
+
+// ①-2 モーションブラー: 角度指定方向に多重ずらし描画（等分平均で明るさ保持）
+const motionCanvas = document.createElement('canvas');
+function applyMotionBlur(destCtx, w, h, amount, angleDeg = 5) {
+  if (amount <= 0) return;
+  motionCanvas.width = w;
+  motionCanvas.height = h;
+  const mctx = motionCanvas.getContext('2d');
+  mctx.clearRect(0, 0, w, h);
+  mctx.drawImage(destCtx.canvas, 0, 0);
+
+  const maxOffset = (amount / 100) * Math.min(w, h) * 0.05;
+  const steps = Math.max(5, Math.min(21, Math.round(maxOffset / 1.5)));
+  const angle = angleDeg * Math.PI / 180;
+  const dx = Math.cos(angle);
+  const dy = Math.sin(angle);
+
+  destCtx.save();
+  destCtx.clearRect(0, 0, w, h);
+  // 累積平均: i回目の描画の alpha を 1/i にすると、n回描いた後は全レイヤーが等分平均になる
+  // （globalAlpha=1/totalを全部に使うと累積約64%までしか届かず画像が暗くなるため）
+  let iter = 0;
+  for (let i = -steps; i <= steps; i++) {
+    iter++;
+    const t = i / steps;
+    destCtx.globalAlpha = 1 / iter;
+    destCtx.drawImage(motionCanvas, dx * t * maxOffset, dy * t * maxOffset);
+  }
+  destCtx.globalAlpha = 1;
+  destCtx.restore();
+}
+
+// ①-3 ぼかし（全体ガウス相当 box blur・separable sliding window）
+function applyBoxBlur(data, w, h, radiusF) {
+  if (radiusF < 0.5) return;
+  const r = Math.max(1, Math.round(radiusF));
+  const len = data.length;
+  const temp = new Uint8ClampedArray(len);
+  for (let i = 3; i < len; i += 4) temp[i] = data[i];
+  blurPassH(data, temp, w, h, r);
+  blurPassV(temp, data, w, h, r);
+}
+function blurPassH(src, dst, w, h, r) {
+  const div = 2 * r + 1;
+  for (let y = 0; y < h; y++) {
+    const rowStart = y * w * 4;
+    let rs = 0, gs = 0, bs = 0;
+    for (let k = -r; k <= r; k++) {
+      const px = k < 0 ? 0 : (k >= w ? w - 1 : k);
+      const i = rowStart + px * 4;
+      rs += src[i]; gs += src[i + 1]; bs += src[i + 2];
+    }
+    for (let x = 0; x < w; x++) {
+      const o = rowStart + x * 4;
+      dst[o] = rs / div; dst[o + 1] = gs / div; dst[o + 2] = bs / div;
+      const remX = x - r < 0 ? 0 : x - r;
+      const addX = x + r + 1 >= w ? w - 1 : x + r + 1;
+      const remI = rowStart + remX * 4;
+      const addI = rowStart + addX * 4;
+      rs += src[addI] - src[remI];
+      gs += src[addI + 1] - src[remI + 1];
+      bs += src[addI + 2] - src[remI + 2];
+    }
+  }
+}
+function blurPassV(src, dst, w, h, r) {
+  const div = 2 * r + 1;
+  const rowBytes = w * 4;
+  for (let x = 0; x < w; x++) {
+    const colStart = x * 4;
+    let rs = 0, gs = 0, bs = 0;
+    for (let k = -r; k <= r; k++) {
+      const py = k < 0 ? 0 : (k >= h ? h - 1 : k);
+      const i = py * rowBytes + colStart;
+      rs += src[i]; gs += src[i + 1]; bs += src[i + 2];
+    }
+    for (let y = 0; y < h; y++) {
+      const o = y * rowBytes + colStart;
+      dst[o] = rs / div; dst[o + 1] = gs / div; dst[o + 2] = bs / div;
+      const remY = y - r < 0 ? 0 : y - r;
+      const addY = y + r + 1 >= h ? h - 1 : y + r + 1;
+      const remI = remY * rowBytes + colStart;
+      const addI = addY * rowBytes + colStart;
+      rs += src[addI] - src[remI];
+      gs += src[addI + 1] - src[remI + 1];
+      bs += src[addI + 2] - src[remI + 2];
+    }
+  }
+}
+
+// ② 色パイプライン
+function applyColorPipeline(data, preset, params) {
+  const dr = preset.dr;
+  const drShadow = dr * 0.28;
+  const drHighlight = 255 - dr * 0.18;
+  const drRange = (drHighlight - drShadow) / 255;
+  const expF = 1 + (params.exposure || 0) / 100;
+  const stAmt = (params.colorAmount || 0) / 100;
+  const ss = preset.shadowShift || { r: 0, g: 0, b: 0 };
+  const hs = preset.highlightShift || { r: 0, g: 0, b: 0 };
+  const noiseAmt = params.noise || 0;
+  const chromaStr = noiseAmt * 0.2;
+  const lumaStr  = noiseAmt * 0.08;
+
+  const len = data.length;
+  for (let i = 0; i < len; i += 4) {
+    let r = data[i];
+    let g = data[i + 1];
+    let b = data[i + 2];
+
+    if (dr > 0) {
+      r = drShadow + r * drRange;
+      g = drShadow + g * drRange;
+      b = drShadow + b * drRange;
+    }
+    if (params.exposure) {
+      r *= expF; g *= expF; b *= expF;
+    }
+    if (stAmt > 0) {
+      const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      const sM = (1 - lum) * stAmt;
+      const hM = lum * stAmt;
+      r += ss.r * sM + hs.r * hM;
+      g += ss.g * sM + hs.g * hM;
+      b += ss.b * sM + hs.b * hM;
+    }
+    if (noiseAmt > 0) {
+      const lum = (r + g + b) / (3 * 255);
+      const sB = 1 + (1 - lum) * 1.5;
+      r += (Math.random() - 0.5) * chromaStr * 0.6 * sB;
+      g += (Math.random() - 0.5) * chromaStr * 0.5 * sB;
+      b += (Math.random() - 0.5) * chromaStr * 0.6 * sB;
+      const n = (Math.random() - 0.5) * lumaStr * sB;
+      r += n; g += n; b += n;
+    }
+
+    // 彩度調整（-100 〜 +100 → 0.0 〜 2.0）
+    // プリセット値は applyPreset 時に params.saturation に反映されるので二重加算しない
+    const satVal = params.saturation || 0;
+    if (satVal !== 0) {
+      const satF = 1 + satVal / 100;
+      const lumS = 0.299 * r + 0.587 * g + 0.114 * b;
+      r = lumS + (r - lumS) * satF;
+      g = lumS + (g - lumS) * satF;
+      b = lumS + (b - lumS) * satF;
+    }
+
+    data[i]     = r < 0 ? 0 : r > 255 ? 255 : r;
+    data[i + 1] = g < 0 ? 0 : g > 255 ? 255 : g;
+    data[i + 2] = b < 0 ? 0 : b > 255 ? 255 : b;
+  }
+}
+
+// ②-2 肌明度持ち上げ（RGB比で肌色判定、暗い肌を優先的に明るく）
+function applySkinBrighten(data, amount) {
+  if (amount <= 0) return;
+  const boost = (amount / 100) * 0.7;  // 最大70%持ち上げ
+  const len = data.length;
+  for (let i = 0; i < len; i += 4) {
+    let r = data[i], g = data[i + 1], b = data[i + 2];
+    const lum = (r + g + b) / 3;
+    // 明るすぎるピクセルはスキップ（既に明るい肌は持ち上げない）
+    if (lum > 200) continue;
+    // 肌色判定: R > G、R > B、R-B がある程度、暗すぎない
+    const rbDiff = r - b;
+    const rgDiff = r - g;
+    if (r <= g || rbDiff < 6 || lum < 25) continue;
+    // 肌色スコア（0-1）
+    const rbScore = Math.min(1, rbDiff / 50);
+    const rgScore = Math.min(1, Math.max(0, rgDiff) / 25);
+    const skinScore = rbScore * (0.4 + 0.6 * rgScore);
+    // 暗い肌ほど強く持ち上げる
+    const darkBoost = Math.max(0, Math.min(1, (130 - lum) / 100));
+    const factor = 1 + boost * skinScore * (0.3 + 0.7 * darkBoost);
+    r *= factor;
+    g *= factor;
+    b *= factor;
+    data[i]     = r > 255 ? 255 : r;
+    data[i + 1] = g > 255 ? 255 : g;
+    data[i + 2] = b > 255 ? 255 : b;
+  }
+}
+
+// ③ グロー (Epik / 韓国風)
+// ハイライト抽出 → ダウンサンプルブラー → box blurで段差除去 → Screen合成
+// glow強度が上がるほど box blur 半径も大きくなり、「もっと発光 = もっと滑らか」が両立する
+const glowCanvas = document.createElement('canvas');
+const glowBlurCanvas = document.createElement('canvas');
+function applyGlow(destCtx, w, h, amount, threshold) {
+  // 3-1. 現在の canvas 状態を glowCanvas にコピー
+  glowCanvas.width = w;
+  glowCanvas.height = h;
+  const gctx = glowCanvas.getContext('2d');
+  gctx.clearRect(0, 0, w, h);
+  gctx.drawImage(destCtx.canvas, 0, 0);
+
+  // 3-2. ハイライト抽出（smoothstepでなだらかに立ち上げ）
+  const imageData = gctx.getImageData(0, 0, w, h);
+  const d = imageData.data;
+  const len = d.length;
+  for (let i = 0; i < len; i += 4) {
+    const lum = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+    const t = Math.max(0, Math.min(1, (lum - threshold) / 60));
+    const smooth = t * t * (3 - 2 * t);
+    d[i]     *= smooth;
+    d[i + 1] *= smooth;
+    d[i + 2] *= smooth;
+  }
+  gctx.putImageData(imageData, 0, 0);
+
+  // 3-3. ダウンサンプルブラー（一次ブラー）
+  const bScale = 0.07;
+  const bW = Math.max(8, Math.round(w * bScale));
+  const bH = Math.max(8, Math.round(h * bScale));
+  glowBlurCanvas.width = bW;
+  glowBlurCanvas.height = bH;
+  const bctx = glowBlurCanvas.getContext('2d');
+  bctx.imageSmoothingEnabled = true;
+  bctx.imageSmoothingQuality = 'high';
+  bctx.clearRect(0, 0, bW, bH);
+  bctx.drawImage(glowCanvas, 0, 0, bW, bH);
+  gctx.imageSmoothingEnabled = true;
+  gctx.imageSmoothingQuality = 'high';
+  gctx.clearRect(0, 0, w, h);
+  gctx.drawImage(glowBlurCanvas, 0, 0, w, h);
+
+  // 3-4. box blur（二次ブラー・段差除去＋輪郭をふんわり溶かす）
+  // glow強度が上がるほど半径を大きくして、より滑らか＆より光らせる
+  // amount 0-300 → 短辺の 0.8% 〜 4.3%
+  // 2回適用でガウシアン近似（中心極限定理）、輪郭が自然にふわっと溶ける
+  const smoothRatio = 0.008 + (Math.min(amount, 300) / 300) * 0.035;
+  const smoothR = Math.max(4, Math.round(Math.min(w, h) * smoothRatio));
+  const smoothData = gctx.getImageData(0, 0, w, h);
+  applyBoxBlur(smoothData.data, w, h, smoothR);
+  applyBoxBlur(smoothData.data, w, h, smoothR);  // 2回目: ガウシアン近似で輪郭をさらに溶かす
+  gctx.putImageData(smoothData, 0, 0);
+
+  // 3-5. Screen合成（amount > 100 は複数回重ねで最大300まで対応）
+  const firstAmt = Math.min(100, amount) / 100;
+  destCtx.save();
+  destCtx.globalCompositeOperation = 'screen';
+  destCtx.globalAlpha = firstAmt;
+  destCtx.drawImage(glowCanvas, 0, 0);
+  destCtx.restore();
+  if (amount > 100) {
+    const secondAmt = Math.min(1, (amount - 100) / 100);
+    destCtx.save();
+    destCtx.globalCompositeOperation = 'screen';
+    destCtx.globalAlpha = secondAmt;
+    destCtx.drawImage(glowCanvas, 0, 0);
+    destCtx.restore();
+  }
+  if (amount > 200) {
+    const thirdAmt = Math.min(1, (amount - 200) / 100);
+    destCtx.save();
+    destCtx.globalCompositeOperation = 'screen';
+    destCtx.globalAlpha = thirdAmt;
+    destCtx.drawImage(glowCanvas, 0, 0);
+    destCtx.restore();
+  }
+}
+
+// ④ ビネット
+function applyVignette(ctx, w, h, amount) {
+  const alpha = (amount / 100) * 0.9;
+  const cx = w / 2;
+  const cy = h / 2;
+  const outer = Math.sqrt(w * w + h * h) / 2;
+  const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, outer);
+  gradient.addColorStop(0, 'rgba(0,0,0,0)');
+  gradient.addColorStop(0.35, 'rgba(0,0,0,0)');
+  gradient.addColorStop(1, `rgba(0,0,0,${alpha.toFixed(3)})`);
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, w, h);
+}
+
+// ⑤ Double JPEG compression（プリセットで使う場合のみ）
+async function doubleJpegCompress(canvas, quality) {
+  const blob1 = await new Promise((resolve, reject) => {
+    canvas.toBlob((b) => b ? resolve(b) : reject(new Error('blob1 failed')), 'image/jpeg', quality);
+  });
+  const img = new Image();
+  const url1 = URL.createObjectURL(blob1);
+  await new Promise((resolve, reject) => {
+    img.onload = resolve;
+    img.onerror = reject;
+    img.src = url1;
+  });
+  canvas.width = img.width;
+  canvas.height = img.height;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0);
+  URL.revokeObjectURL(url1);
+  const blob2 = await new Promise((resolve, reject) => {
+    canvas.toBlob((b) => b ? resolve(b) : reject(new Error('blob2 failed')), 'image/jpeg', quality);
+  });
+  return blob2;
+}
+
+// Download
+// 単一エントリを blob 化
+async function exportEntryToBlob(entry) {
+  const src = entry.image;
+  const totalPixels = src.width * src.height;
+  let exportScale = 1;
+  if (totalPixels > MAX_EXPORT_PIXELS) {
+    exportScale = Math.sqrt(MAX_EXPORT_PIXELS / totalPixels);
+  }
+  const exportW = Math.round(src.width * exportScale);
+  const exportH = Math.round(src.height * exportScale);
+
+  fullCanvas.width = exportW;
+  fullCanvas.height = exportH;
+  await new Promise(r => setTimeout(r, 16));
+
+  processCanvas(fullCanvas, src, entry.params, entry.activePreset);
+
+  const preset = PRESETS[entry.activePreset] || PRESETS.midnight;
+  const quality = preset.quality / 100;
+
+  let blob;
+  if (preset.doubleCompress) {
+    blob = await doubleJpegCompress(fullCanvas, quality);
+  } else {
+    blob = await new Promise((resolve, reject) => {
+      fullCanvas.toBlob((b) => b ? resolve(b) : reject(new Error('blob failed')), 'image/jpeg', quality);
+    });
+  }
+  return blob;
+}
+
+// モバイル判定（UAベース）
+function isMobileDevice() {
+  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+}
+
+// Share APIでファイル共有できるか判定（PC Chromeでも canShare=true になるが
+// 実際の share() はデスクトップでは機能しないため、モバイルに限定する）
+function canShareFiles(files) {
+  if (!isMobileDevice()) return false;
+  if (!navigator.canShare || typeof navigator.share !== 'function') return false;
+  try {
+    return navigator.canShare({ files });
+  } catch {
+    return false;
+  }
+}
+
+downloadBtn.addEventListener('click', async () => {
+  if (state.images.length === 0 || state.processing) return;
+  state.processing = true;
+  downloadBtn.disabled = true;
+  setStatus('', 'ok');
+
+  try {
+    const total = state.images.length;
+
+    // 全画像を順次処理してBlob＋ファイル名を集める
+    const exported = [];
+    for (let i = 0; i < total; i++) {
+      const entry = state.images[i];
+      downloadLabel.textContent = total > 1
+        ? `書き出し中… ${i + 1} / ${total}`
+        : '書き出し中…';
+      await new Promise(r => setTimeout(r, 16));
+      const blob = await exportEntryToBlob(entry);
+      const baseName = entry.fileName || `image${i + 1}`;
+      const presetName = entry.activePreset ? `_${entry.activePreset}` : '';
+      // Share API用のファイル名は短めに（連番で重複回避）
+      const fileName = total > 1
+        ? `${String(i + 1).padStart(2, '0')}_${baseName}_lofi${presetName}.jpg`
+        : `${baseName}_lofi${presetName}_${Date.now()}.jpg`;
+      exported.push({ blob, fileName });
+    }
+
+    // Share API（主にスマホ）判定 → 画像Fileとして共有
+    const files = exported.map(e => new File([e.blob], e.fileName, { type: 'image/jpeg' }));
+    let shareSucceeded = false;
+    if (canShareFiles(files)) {
+      downloadLabel.textContent = '共有中…';
+      try {
+        await navigator.share({
+          files,
+          title: 'lo-fi photos',
+        });
+        setStatus(files.length === 1 ? '保存しました' : `${files.length}枚を保存しました`, 'ok');
+        shareSucceeded = true;
+      } catch (shareErr) {
+        if (shareErr.name === 'AbortError') {
+          // ユーザーがキャンセル → 無言で戻る
+          setStatus('', 'ok');
+          return;
+        }
+        // それ以外のエラー（NotAllowedError等）はフォールバックに進む
+        console.warn('Share API failed, falling back to download', shareErr);
+      }
+    }
+    if (shareSucceeded) return;
+
+    // Share API使えない or 失敗 → ダウンロードにフォールバック
+    if (exported.length === 1) {
+      // 単体DL
+      const { blob, fileName } = exported[0];
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+      const kb = (blob.size / 1024).toFixed(0);
+      setStatus(`保存しました · ${kb}kb`, 'ok');
+      return;
+    }
+
+    // 複数 → ZIPで一括DL
+    if (typeof JSZip === 'undefined') {
+      setStatus('ZIP機能が読み込めていません（ネットワークをご確認ください）', 'err');
+      return;
+    }
+    downloadLabel.textContent = 'ZIP作成中…';
+    const zip = new JSZip();
+    exported.forEach(({ blob, fileName }) => {
+      zip.file(fileName, blob);
+    });
+    const zipBlob = await zip.generateAsync({ type: 'blob' });
+    const url = URL.createObjectURL(zipBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `lofi_batch_${Date.now()}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    const mb = (zipBlob.size / 1024 / 1024).toFixed(1);
+    setStatus(`${exported.length}枚をZIPで保存 · ${mb}mb`, 'ok');
+  } catch (err) {
+    console.error(err);
+    let msg = '書き出しに失敗しました';
+    const em = (err && err.message) ? String(err.message).toLowerCase() : '';
+    if (/memory|allocate|out of memory/.test(em)) {
+      msg = '画像が大きすぎて処理できませんでした';
+    } else if (/blob/.test(em)) {
+      msg = '画像の変換に失敗しました';
+    } else if (/jszip/.test(em) || typeof JSZip === 'undefined') {
+      msg = 'ZIPの作成に失敗しました（ネットワークをご確認ください）';
+    } else if (/quota|disk/.test(em)) {
+      msg = 'ストレージが不足しています';
+    } else if (/not allowed|permission/.test(em)) {
+      msg = '保存が許可されませんでした';
+    }
+    setStatus(msg, 'err');
+  } finally {
+    state.processing = false;
+    downloadBtn.disabled = state.images.length === 0;
+    updateDownloadLabel();
+  }
+});
+
+function setStatus(msg, kind) {
+  // ボタン下のstatus（編集中）とアップロード画面上のglobalStatusの両方に反映
+  const globalStatusEl = document.getElementById('globalStatus');
+  [statusEl, globalStatusEl].forEach(el => {
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.remove('err', 'ok', 'info');
+    if (kind) el.classList.add(kind);
+  });
+}
+
+// ========== 詳細セクションの折りたたみトグル ==========
+const detailsToggle = document.getElementById('detailsToggle');
+const slidersDetails = document.getElementById('slidersDetails');
+detailsToggle.addEventListener('click', () => {
+  const isOpen = !slidersDetails.classList.contains('hidden');
+  if (isOpen) {
+    slidersDetails.classList.add('hidden');
+    detailsToggle.classList.remove('open');
+    detailsToggle.querySelector('.details-label').textContent = '詳細を開く';
+  } else {
+    slidersDetails.classList.remove('hidden');
+    detailsToggle.classList.add('open');
+    detailsToggle.querySelector('.details-label').textContent = '詳細を閉じる';
+  }
+});
+
+// ========== リセットボタン ==========
+const resetBtn = document.getElementById('resetBtn');
+resetBtn.addEventListener('click', () => {
+  const entry = activeEntry();
+  if (!entry) return;
+  if (entry.activePreset) applyPreset(entry.activePreset);
+  else applyPreset('midnight');
+});
+
+// ========== グリッド描画 ==========
+const gridList = document.getElementById('gridList');
+const gridAddBtn = document.getElementById('gridAddBtn');
+
+// グリッドサムネ用の小canvas（画像ごとに独立）
+function renderGrid() {
+  // 一度クリアして、divider/addBtnを残して再構築
+  const existingThumbs = gridList.querySelectorAll('.grid-thumb');
+  existingThumbs.forEach(t => t.remove());
+
+  const divider = gridList.querySelector('.grid-divider');
+  state.images.forEach((entry, i) => {
+    const thumb = document.createElement('button');
+    thumb.type = 'button';
+    thumb.className = 'grid-thumb';
+    thumb.dataset.index = i;
+    if (i === state.activeIndex) thumb.classList.add('active');
+
+    const canvas = document.createElement('canvas');
+    canvas.width = THUMB_SIZE;
+    canvas.height = THUMB_SIZE;
+    thumb.appendChild(canvas);
+
+    // 削除ボタン
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'grid-thumb-remove';
+    removeBtn.innerHTML = '✕';
+    removeBtn.type = 'button';
+    removeBtn.setAttribute('aria-label', '削除');
+    removeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const idx = parseInt(thumb.dataset.index, 10);
+      removeImageEntry(idx);
+    });
+    thumb.appendChild(removeBtn);
+
+    thumb.addEventListener('click', () => {
+      const idx = parseInt(thumb.dataset.index, 10);
+      setActiveImage(idx);
+    });
+
+    gridList.insertBefore(thumb, divider);
+
+    // サムネ描画（center-cropされた正方形に processCanvas を適用）
+    renderThumbCanvas(canvas, entry);
+  });
+
+  // 追加ボタンの有効/無効
+  gridAddBtn.disabled = state.images.length >= MAX_IMAGES;
+  // 保存ボタンラベル・枚数ヒントも更新
+  if (typeof updateDownloadLabel === 'function') updateDownloadLabel();
+  updateLimitHint();
+}
+
+// エントリ1つのサムネを描画（center crop + processCanvas）
+function renderThumbCanvas(canvas, entry) {
+  const ctx = canvas.getContext('2d');
+  const img = entry.image;
+  const iw = img.naturalWidth || img.width;
+  const ih = img.naturalHeight || img.height;
+  // center crop square
+  const size = Math.min(iw, ih);
+  const sx = (iw - size) / 2;
+  const sy = (ih - size) / 2;
+  // 一度クロップしてcanvasに描く（そのままprocessCanvasに渡せるImageSource）
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(img, sx, sy, size, size, 0, 0, canvas.width, canvas.height);
+  // クロップ済みcanvasを image として扱うためにtemp Imageに変換せず直接processCanvas
+  // processCanvasはImageSource（Image/Canvas）を受け取るのでcanvasそのまま渡してOK
+  // ただしsource==target だと clearRect で消えるので、中間canvasを使う
+  const tmp = document.createElement('canvas');
+  tmp.width = canvas.width;
+  tmp.height = canvas.height;
+  tmp.getContext('2d').drawImage(canvas, 0, 0);
+  processCanvas(canvas, tmp, entry.params, entry.activePreset);
+}
+
+// 現在選択中のサムネだけ更新（スライダー編集中）
+function updateGridThumb(index) {
+  if (index < 0 || index >= state.images.length) return;
+  const thumb = gridList.querySelector(`.grid-thumb[data-index="${index}"]`);
+  if (!thumb) return;
+  const canvas = thumb.querySelector('canvas');
+  if (!canvas) return;
+  renderThumbCanvas(canvas, state.images[index]);
+}
+
+function updateGridActive() {
+  gridList.querySelectorAll('.grid-thumb').forEach(t => {
+    const idx = parseInt(t.dataset.index, 10);
+    t.classList.toggle('active', idx === state.activeIndex);
+  });
+}
+
+// 追加ボタン: クリックで再アップロードと同じinputを使う、ドラッグ&ドロップも受付
+gridAddBtn.addEventListener('click', () => {
+  if (state.images.length >= MAX_IMAGES) return;
+  fileInput.click();
+});
+
+// ドラッグ&ドロップ対応（PC向け）
+['dragenter', 'dragover'].forEach(ev => {
+  gridAddBtn.addEventListener(ev, (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (state.images.length >= MAX_IMAGES) return;
+    gridAddBtn.classList.add('drag-active');
+  });
+});
+['dragleave', 'dragend'].forEach(ev => {
+  gridAddBtn.addEventListener(ev, (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    gridAddBtn.classList.remove('drag-active');
+  });
+});
+gridAddBtn.addEventListener('drop', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  gridAddBtn.classList.remove('drag-active');
+  const files = e.dataTransfer && e.dataTransfer.files;
+  if (files && files.length) handleFiles(files);
+});
+
+// ========== 拡大モーダル ==========
+const zoomModal = document.getElementById('zoomModal');
+const zoomBtn = document.getElementById('zoomBtn');
+const zoomClose = document.getElementById('zoomClose');
+const zoomBackdrop = document.getElementById('zoomBackdrop');
+const zoomCanvas = document.getElementById('zoomCanvas');
+
+function openZoom() {
+  const entry = activeEntry();
+  if (!entry) return;
+  const src = entry.image;
+  const maxW = window.innerWidth * 0.9;
+  const maxH = window.innerHeight * 0.85;
+  const scale = Math.min(maxW / src.width, maxH / src.height, 1.5);
+  const w = Math.round(src.width * scale);
+  const h = Math.round(src.height * scale);
+  zoomCanvas.width = w;
+  zoomCanvas.height = h;
+  if (state.showBefore) {
+    zoomCanvas.getContext('2d').drawImage(src, 0, 0, w, h);
+  } else {
+    processCanvas(zoomCanvas, src, entry.params, entry.activePreset);
+  }
+  zoomModal.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+function closeZoom() {
+  zoomModal.classList.add('hidden');
+  document.body.style.overflow = '';
+}
+zoomBtn.addEventListener('click', openZoom);
+zoomClose.addEventListener('click', closeZoom);
+zoomBackdrop.addEventListener('click', closeZoom);
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !zoomModal.classList.contains('hidden')) closeZoom();
+});
+
+// ========== 再アップロードボタン（全クリア→新規選択） ==========
+const reuploadBtn = document.getElementById('reuploadBtn');
+const reuploadInput = document.getElementById('reuploadInput');
+reuploadBtn.addEventListener('click', () => {
+  reuploadInput.click();
+});
+reuploadInput.addEventListener('change', (e) => {
+  if (!e.target.files || e.target.files.length === 0) return;
+  // 全画像クリアして新規
+  state.images = [];
+  state.activeIndex = -1;
+  handleFiles(e.target.files);
+  e.target.value = '';
+});
+
+// ========== DownloadLabel 更新 ==========
+const downloadLabel = document.getElementById('downloadLabel');
+function updateDownloadLabel() {
+  const n = state.images.length;
+  if (n <= 1) {
+    downloadLabel.textContent = '保存';
+  } else {
+    downloadLabel.textContent = `全て保存 (${n}枚)`;
+  }
+}
+
+// ========== アプリ初期化 ==========
+// 初期状態はアップロード待ち。ユーザーが画像を選択するまで編集UIは非表示のまま。
+
+})();
+</script>
+</body>
+</html>
