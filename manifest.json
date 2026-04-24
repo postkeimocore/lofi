@@ -1,0 +1,19 @@
+{
+  "name": "NOIRU · lo-fi haze processor",
+  "short_name": "NOIRU",
+  "description": "韓国っぽい儚い加工ができる写真加工ツール",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F9F8FC",
+  "theme_color": "#F9F8FC",
+  "lang": "ja",
+  "icons": [
+    {
+      "src": "./apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
